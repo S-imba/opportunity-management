@@ -1,15 +1,17 @@
 import './App.css';
-import { EasybaseProvider, useEasybase } from 'easybase';
-import { useEffect } from 'react';
-import ebconfig from './ebconfig';
+import { EasybaseProvider, useEasybase } from 'easybase-react';
+import { useEffect, useState } from 'react';
+import ebconfig from './Ebconfig';
+import LoginButton from './components/LoginButton';
+import LogoutButton from './components/LogoutButton';
+
 
 function App() {
   return (
-    <div className="App" style={{ display: "flex", justifyContent: "center" }}>
-      <EasybaseProvider ebconfig={ebconfig}>
-        <Notes />
-      </EasybaseProvider>
-    </div>
+    <>
+      <LoginButton/>
+      <LogoutButton/>
+    </>
   );
 }
 
@@ -20,11 +22,7 @@ function Notes() {
     configureFrame({ tableName: "NOTES APP", limit : 10})
     sync();
   }, []);
-  /*const backendData = [
-    { title: "Grocery List", description: "Milk, Soup, Bread", createdat: "01-18-2021" },
-    { title: "Math Homework", description: "Remember to finish question 8-10 before monday", createdat: "12-01-2020" },
-    { title: "Call James", description: "Ask him about the company party.", createdat: "12-30-2020" }
-  ]*/
+  
 
   const noteRootStyle = {
     border: "2px #0af solid",
@@ -36,15 +34,51 @@ function Notes() {
 
   return (
     <div style={{ width: 400 }}>
-      {backendData.map(ele => 
+      {Frame().map(ele => 
         <div style={noteRootStyle}>
           <h3>{ele.title}</h3>
           <p>{ele.description}</p>
-          <small>{ele.createdat}</small>
+          <small>{ele.createdate}</small>
         </div>
       )}
     </div>
   )
 }
+
+function NewNoteBtton(){
+  const { Frame, sync } = useEasybase();
+
+  const buttonStyle = {
+    position: 'absolute',
+    left: 10, top: 10, fontSize: 21
+  }
+
+  const handleClick = () => {
+    const newTitle = prompt('Please enter a title');
+    const newDescription = prompt('Please enter the description');
+
+    Frame().push({
+      title: newTitle,
+      description: newDescription,
+      createdate: new Date().toISOString()
+    })
+    sync();
+
+  }
+  return (
+    <button style={buttonStyle} onClick={handleClick}>
+      Add New Note
+    </button>
+  );
+}
+
+
+/*<div className="App" style={{ display: "flex", justifyContent: "center" }}>
+      <EasybaseProvider ebconfig={ebconfig}>
+        <Notes></Notes>
+        <NewNoteBtton></NewNoteBtton>
+      </EasybaseProvider>
+    </div>*/
+
 
 export default App;

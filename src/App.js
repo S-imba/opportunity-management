@@ -9,8 +9,16 @@ import LogoutButton from './components/LogoutButton';
 function App() {
   return (
     <>
-      <LoginButton/>
+    <div>
+      <LoginButton></LoginButton>
       <LogoutButton/>
+    </div>
+    <div className="App" style={{ display: "flex", justifyContent: "center" }}>
+        <EasybaseProvider ebconfig={ebconfig}>
+          <Notes></Notes>
+          <NewAccountBtton></NewAccountBtton>
+        </EasybaseProvider>
+    </div>
     </>
   );
 }
@@ -19,12 +27,12 @@ function Notes() {
   const { Frame, sync, configureFrame } = useEasybase();
 
   useEffect(() => {
-    configureFrame({ tableName: "NOTES APP", limit : 10})
+    configureFrame({ tableName: "ACCOUNTS", limit : 10})
     sync();
   }, []);
   
 
-  const noteRootStyle = {
+  const accountRootStyle = {
     border: "2px #0af solid",
     borderRadius: 9,
     margin: 20,
@@ -35,50 +43,46 @@ function Notes() {
   return (
     <div style={{ width: 400 }}>
       {Frame().map(ele => 
-        <div style={noteRootStyle}>
+        <div style={accountRootStyle}>
           <h3>{ele.title}</h3>
-          <p>{ele.description}</p>
-          <small>{ele.createdate}</small>
+          <p>{ele.address}</p>
+          <small>{ele.email}</small>
         </div>
       )}
     </div>
   )
 }
 
-function NewNoteBtton(){
+function NewAccountBtton(){
   const { Frame, sync } = useEasybase();
 
   const buttonStyle = {
     position: 'absolute',
-    left: 10, top: 10, fontSize: 21
+    right: 10, top: 10, fontSize: 21
   }
 
   const handleClick = () => {
-    const newTitle = prompt('Please enter a title');
-    const newDescription = prompt('Please enter the description');
+    const newTitle = prompt('Please enter a account name');
+    const newAddress = prompt('Please enter the address');
+    const newEmail = prompt('Please enter the email address');
 
     Frame().push({
       title: newTitle,
-      description: newDescription,
-      createdate: new Date().toISOString()
+      address: newAddress,
+      email: newEmail
     })
     sync();
 
   }
   return (
     <button style={buttonStyle} onClick={handleClick}>
-      Add New Note
+      Add Account
     </button>
   );
 }
 
 
-/*<div className="App" style={{ display: "flex", justifyContent: "center" }}>
-      <EasybaseProvider ebconfig={ebconfig}>
-        <Notes></Notes>
-        <NewNoteBtton></NewNoteBtton>
-      </EasybaseProvider>
-    </div>*/
+/**/
 
 
 export default App;
